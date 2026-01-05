@@ -18,6 +18,7 @@
 
 #include "DropsUI.hpp"
 #include <iostream>
+#include <fstream>
 
 #define NANOSVG_IMPLEMENTATION
 #include "nanosvg.h"
@@ -100,11 +101,23 @@ void DropsUI::initWidgets()
     Window &window = getParentWindow();
     fileopen_button = new FileOpenButton(window);
     fileopen_button->setCallback(this);
-    fileopen_button->setAbsolutePos(238, 0);
-    fileopen_button->setSize(530, 55);
+    fileopen_button->setAbsolutePos(248, 10);
+    fileopen_button->setSize(530, 40);
     fileopen_button->background_color = eerie_black_3;
     fileopen_button->text_color = floral_white;
-    fileopen_button->font_size = 24.f;
+    fileopen_button->font_size = 18.f;
+
+    // Add Export SFZ button
+    fExportSFZButton = new TextButton(window);
+    fExportSFZButton->setId(kExportSFZ);
+    fExportSFZButton->setText("EXPORT");
+    fExportSFZButton->setCallback(this);
+    fExportSFZButton->setAbsolutePos(display_right - 85, 10);
+    fExportSFZButton->setSize(110, 40);
+    fExportSFZButton->background_color = eerie_black_3;
+    fExportSFZButton->foreground_color = floral_white;
+    fExportSFZButton->highlight_color = flame;
+    fExportSFZButton->font_size = 18.f;
 
     fScrollBarHandle = new ScrollBar(window);
     fScrollBarHandle->setId(kScrollbarHandle);
@@ -320,27 +333,27 @@ void DropsUI::initWidgets()
         "23 B0",
         "22 A#0/Bb0",
         "21 A0",
-        "20  ",
-        "19  ",
-        "18  ",
-        "17  ",
-        "16  ",
-        "15  ",
-        "14  ",
-        "13  ",
-        "12  ",
-        "11  ",
-        "10  ",
-        "9  ",
-        "8  ",
-        "7  ",
-        "6  ",
-        "5  ",
-        "4  ",
-        "3  ",
-        "2  ",
-        "1  ",
-        "0 ",
+        "20 G#1/Ab1",
+        "19 G1",
+        "18 F#0/Gb0",
+        "17 F0",
+        "16 E0",
+        "15 D#0/Eb0",
+        "14 D0",
+        "13 C#0/Db0",
+        "12 C0",
+        "11 B-1",
+        "10 A#-1/Bb-1",
+        "9 A-1"
+        "8 G#-1/Ab-1",
+        "7 G-1",
+        "6 F#-1/Gb-1",
+        "5 F-1",
+        "4 E-1",
+        "3 D#-1/Eb-1",
+        "2 D-1",
+        "1 C#-1/Db-1",
+        "0 C-1",
     });
     fKeyCenterMenu->hide();
     fKeyCenterMenu->background_color = black_olive;
@@ -569,7 +582,7 @@ void DropsUI::makeIcons()
     dropsLogo = new SVGImage(this, drops_logo, 1.0f);
     loopLeft = new SVGImage(this, loop_left, 1.0f);
     loopRight = new SVGImage(this, loop_right, 1.0f);
-    clearlyBrokenLogo = new SVGImage(this, artwork::clearly_broken_logo, 0.8f);
+    //clearlyBrokenLogo = new SVGImage(this, artwork::clearly_broken_logo, 0.8f);
 }
 
 std::string DropsUI::dirnameOf(const std::string &fname)
@@ -578,6 +591,158 @@ std::string DropsUI::dirnameOf(const std::string &fname)
     return (std::string::npos == pos)
                ? ""
                : fname.substr(0, pos);
+}
+
+int DropsUI::getParameterValueAsInt(uint32_t index, float scale)
+{
+    float value = plugin->getParameterValue(index) * scale;
+    return static_cast<int>(value);
+}
+
+void DropsUI::exportSFZFile()
+{
+    if (!plugin->loadedSample || fileName.empty())
+    {
+        fPopUp->setText("No sample loaded!");
+        fPopUp->resize();
+        fPopUp->show();
+        return;
+    }
+
+    // Get the sample filename without path
+    std::string sampleFilename = fileName;
+    size_t lastSlash = sampleFilename.find_last_of("/\\");
+    if (lastSlash != std::string::npos)
+    {
+        sampleFilename = sampleFilename.substr(lastSlash + 1);
+    }
+
+    // Generate SFZ content
+    std::stringstream sfzContent;
+
+    // Add SFZ header
+    sfzContent << "// Drops SFZ Export\n";
+    sfzContent << "// Generated from sample: " << sampleFilename << "\n\n";
+
+    // Add global settings
+    sfzContent << "<region>\n";
+
+    // Add sample path (relative to SFZ file)
+    sfzContent << "sample=" << sampleFilename << "\n";
+
+    // Add pitch keycenter
+    sfzContent << "pitch_keycenter=" << getParameterValueAsInt(kSamplePitchKeyCenter, 1) << "\n";
+    sfzContent << "pitch=" << getParameterValueAsInt(kSamplePitch, 1) - 100 << "\n";
+
+    // Add play direction
+    std::string direction = fSamplePlayDirection->item;
+    if (direction == "REVERSE")
+    {
+        sfzContent << "direction=reverse\n";
+    }
+
+    // Add loop mode
+    std::string loopMode = fSamplePlayMode->item;
+    if (loopMode == "NO LOOP")
+    {
+        sfzContent << "loop_mode=no_loop\n";
+    }
+    else if (loopMode == "ONE SHOT")
+    {
+        sfzContent << "loop_mode=one_shot\n";
+    }
+    else if (loopMode == "CONTINUOUS")
+    {
+        sfzContent << "loop_mode=loop_continuous\n";
+        // Add loop start and end
+        sfzContent << "loop_start=" << sampleLoopStart << "\n";
+        sfzContent << "loop_end=" << sampleLoopEnd << "\n";
+    }
+    else if (loopMode == "SUSTAIN")
+    {
+        sfzContent << "loop_mode=loop_sustain\n";
+        // Add loop start and end
+        sfzContent << "loop_start=" << sampleLoopStart << "\n";
+        sfzContent << "loop_end=" << sampleLoopEnd << "\n";
+    }
+
+    // Add sample start and end points
+    sfzContent << "offset=" << sampleIn << "\n";
+    sfzContent << "end=" << sampleOut << "\n";
+
+    // Pitch EG parameters
+    // EG paramaters in the plugin are in the range 0-1 (float), in SFZ it has 0-100 (float) seconds or percent
+    // The parameters are actually applied via CC (hdcc) which all seem to use SFZ curve 0 and be scaled by ..._oncc...
+    sfzContent << "pitcheg_attack=" << 10 * plugin->getParameterValue(kPitchEgAttack) << "\n";
+    sfzContent << "pitcheg_decay=" << 10 * plugin->getParameterValue(kPitchEgDecay) << "\n";
+    sfzContent << "pitcheg_sustain=" << 100 * plugin->getParameterValue(kPitchEgSustain) << "\n";
+    sfzContent << "pitcheg_release=" << 10 * plugin->getParameterValue(kPitchEgRelease) << "\n";
+    sfzContent << "pitcheg_depth=" << getParameterValueAsInt(kPitchEgDepth, 1200) << "\n";
+
+    // Pitch LFO parameters
+    // TODO: move this function to DropsPlugin in order to be able to access members like lfo_types_[]
+    //sfzContent << "lfo03_wave=" << getParameterValueAsInt(kPitchLFOType, 1) << "\n";
+    sfzContent << "lfo03_freq=" << 20 * plugin->getParameterValue(kPitchLFOFreq) << "\n";
+    //sfzContent << "lfo03_beats=" << getParameterValueAsInt(kPitchLFOSyncFreq, 1) << "\n";
+    //sfzContent << "lfo03_count=1\n";
+    sfzContent << "lfo03_fade=" << 10 * plugin->getParameterValue(kPitchLFOFade) << "\n";
+    sfzContent << "lfo03_pitch=" << 1200 * plugin->getParameterValue(kPitchLFODepth) << "\n";
+
+    // Filter parameters
+    sfzContent << "cutoff=" << 12000 * plugin->getParameterValue(kFilterCutOff) << "\n";
+    sfzContent << "resonance=" << 20 * plugin->getParameterValue(kFilterResonance) << "\n";
+
+    // Filter EG parameters
+    sfzContent << "fileg_attack=" << 10 * plugin->getParameterValue(kFilterEgAttack) << "\n";
+    sfzContent << "fileg_decay=" << 10 * plugin->getParameterValue(kFilterEgDecay) << "\n";
+    sfzContent << "fileg_sustain=" << 100 * plugin->getParameterValue(kFilterEgSustain) << "\n";
+    sfzContent << "fileg_release=" << 10 * plugin->getParameterValue(kFilterEgRelease) << "\n";
+    sfzContent << "fileg_depth=" << getParameterValueAsInt(kFilterEgDepth, 12000) << "\n";
+
+    // TODO: Filter LFO parameters
+    //sfzContent << "lfo02_wave=" << getParameterValueAsInt(kFilterLFOType, 1) << "\n";
+    sfzContent << "lfo02_freq=" << 20 * plugin->getParameterValue(kFilterLFOFreq) << "\n";
+    //sfzContent << "lfo02_beats=" << getParameterValueAsInt(kFilterLFOSyncFreq, 1) << "\n";
+    //sfzContent << "lfo02_count=1\n";
+    sfzContent << "lfo02_fade=" << 10 * plugin->getParameterValue(kFilterLFOFade) << "\n";
+    sfzContent << "lfo02_cutoff=" << 24000 * plugin->getParameterValue(kFilterLFODepth) << "\n";
+
+    // Amp EG parameters
+    sfzContent << "ampeg_attack=" << 10 * plugin->getParameterValue(kAmpEgAttack) << "\n";
+    sfzContent << "ampeg_decay=" << 10 * plugin->getParameterValue(kAmpEgDecay) << "\n";
+    sfzContent << "ampeg_sustain=" << 100 * plugin->getParameterValue(kAmpEgSustain) << "\n";
+    sfzContent << "ampeg_release=" << 10 * plugin->getParameterValue(kAmpEgRelease) << "\n";
+
+    // Amp LFO parameters
+    //sfzContent << "lfo01_wave=" << getParameterValueAsInt(kAmpLFOType, 1) << "\n";
+    sfzContent << "lfo01_freq=" << 20 * plugin->getParameterValue(kAmpLFOFreq) << "\n";
+    //sfzContent << "lfo01_beats=" << getParameterValueAsInt(kAmpLFOSyncFreq) << "\n";
+    //sfzContent << "lfo01_count=1\n";
+    sfzContent << "lfo01_fade=" << 10 * plugin->getParameterValue(kAmpLFOFade) << "\n";
+    sfzContent << "lfo01_volume=" << 12 * plugin->getParameterValue(kAmpLFODepth) << "\n";
+
+    // Close section
+    sfzContent << "\n";
+
+    // Save the SFZ file next to the sample
+    std::stringstream sfzFilename;
+    sfzFilename << fileName << ".sfz";
+
+    // Save the SFZ content to the selected file
+    std::ofstream outFile(sfzFilename.str());
+    if (outFile.is_open())
+    {
+	outFile << sfzContent.str();
+	outFile.close();
+	fPopUp->setText("SFZ exported successfully!");
+	fPopUp->resize();
+	fPopUp->show();
+    }
+    else
+    {
+	fPopUp->setText("Failed to save SFZ file!");
+	fPopUp->show();
+    }
 }
 
 void DropsUI::parameterChanged(uint32_t index, float value)
@@ -898,18 +1063,7 @@ void DropsUI::onNanoDisplay()
         drawInOutMarkers();
     }
 
-    // draw logos
-    uint w = dropsLogo->getWidth();
-    uint h = dropsLogo->getHeight();
-    int x = fileopen_button->getAbsoluteX() / 2 - w / 2;
-    int y = fileopen_button->getHeight() / 2 - h / 2;
-    dropsLogo->drawAt(x, y);
-    const int fo_right = fileopen_button->getAbsoluteX() + fileopen_button->getWidth();
-    const int half_right_space = (width - fo_right) / 2;
-    const int half_cb_logo = clearlyBrokenLogo->getWidth() / 2;
-    x = fo_right + half_right_space - half_cb_logo;
-    y = fileopen_button->getHeight() / 2 - clearlyBrokenLogo->getHeight() / 2;
-    clearlyBrokenLogo->drawAt(x, y);
+    dropsLogo->drawAt(10, 5);
 
     // VBOX_AMP xywh {12 329 323 176}
     beginPath();
@@ -1545,9 +1699,21 @@ void DropsUI::onFileOpenButtonClicked(FileOpenButton *)
     getParentWindow().openFileBrowser(opts);
 }
 
-// void DropsUI::onTextButtonClicked(TextButton *tb)
-// {
-// }
+void DropsUI::onTextButtonClicked(TextButton *tb)
+{
+    uint id = tb->getId();
+    switch (id)
+    {
+    case kExportSFZ:
+        exportSFZFile();
+        break;
+    default:
+#ifdef DEBUG
+        printf("TextButton %i clicked\n", id);
+#endif
+        break;
+    }
+}
 
 void DropsUI::onDropDownClicked(DropDown *dropDown)
 {
@@ -1715,9 +1881,9 @@ void DropsUI::knobDragFinished(Knob *knob, float value)
     //     printf("%i , drag finished\n", id);
     // #endif
 }
+
 void DropsUI::knobValueChanged(Knob *knob, float value)
 {
-
     uint id = knob->getId();
 
     switch (id)
@@ -1971,7 +2137,6 @@ void DropsUI::onMenuClicked(Menu *menu, uint menu_id, std::string item)
         setParameterValue(kFilterLFOType, menu_id);
         break;
     default:
-
         break;
     }
 }
@@ -2036,6 +2201,7 @@ void DropsUI::onSVGButtonClicked(SVGButton *svgb)
         break;
     }
 }
+
 void DropsUI::onCheckBoxClicked(CheckBox *checkbox, bool is_checked)
 {
     float value = static_cast<float>(is_checked);

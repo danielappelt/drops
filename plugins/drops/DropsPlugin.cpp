@@ -155,6 +155,7 @@ void DropsPlugin::initParameter(uint32_t index, Parameter &parameter)
         parameter.hints = kParameterIsBoolean;
         break;
     case kSamplePitch:
+        // TODO: for automation this is mileading.. better use -100..100
         parameter.name = "Pitch";
         parameter.symbol = "pitch";
         parameter.ranges.min = 0.0f;
@@ -1101,7 +1102,7 @@ void DropsPlugin::initSFZ()
     opcodes["pitch"] = "0";
     opcodes["pitch_oncc500"] = "0";
     opcodes["ampeg_attack"] = "0";
-    opcodes["ampeg_attack_oncc2010"] = "10";
+    opcodes["ampeg_attack_oncc201"] = "10";
     opcodes["ampeg_decay"] = "0";
     opcodes["ampeg_decay_oncc202"] = "10";
     opcodes["ampeg_sustain"] = "100";
@@ -1257,7 +1258,7 @@ void DropsPlugin::makeSFZ()
     buffer << "fileg_sustain=0 \n";
     buffer << "fileg_sustain_oncc303=100 \n";
     buffer << "fileg_release=10 \n";
-    buffer << "fileg_release_oncc304=-10\n";
+    buffer << "fileg_release_oncc304=-10\n"; // TODO: this looks weird
     // filter lfo
     buffer << "lfo02_wave=" << opcodes["lfo02_wave"] << "\n";
     if (static_cast<bool>(fFilterLFOSync))
