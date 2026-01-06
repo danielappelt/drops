@@ -38,6 +38,7 @@ class DropsPlugin : public Plugin
 {
 public:
     DropsPlugin();
+    std::string createSFZ();
 
 protected:
     // -------------------------------------------------------------------
@@ -104,7 +105,6 @@ protected:
 private:
     void foo(void *data, int delay, const char *path, const char *sig, const sfizz_arg_t *args);
 
-    void initSFZ();
     void makeSFZ();
     int loadSample(const char *fp);
     //    void simpleMessageReceiver(void *data, int delay, const char *path, const char *sig, const sfizz_arg_t *args);
@@ -185,7 +185,6 @@ private:
         "12",       // 2/1.
     };
 
-    std::unordered_map<std::string, std::string> opcodes;
     std::vector<std::string> messageList;
     sfz::ClientPtr client;
 

@@ -91,7 +91,6 @@ DropsPlugin::DropsPlugin() : Plugin(kParameterCount, 0, 2)
     fPitchLFOFade = 0.0f;
 
     fFilterMaxFreq = sampleRate * .5;
-    initSFZ();
 
     client = synth.createClient(&messageList);
 }
@@ -1096,219 +1095,140 @@ int DropsPlugin::loadSample(const char *fp)
     return 0;
 }
 
-void DropsPlugin::initSFZ()
+std::string DropsPlugin::createSFZ()
 {
-    opcodes["default_path"] = "";
-    opcodes["pitch"] = "0";
-    opcodes["pitch_oncc500"] = "0";
-    opcodes["ampeg_attack"] = "0";
-    opcodes["ampeg_attack_oncc201"] = "10";
-    opcodes["ampeg_decay"] = "0";
-    opcodes["ampeg_decay_oncc202"] = "10";
-    opcodes["ampeg_sustain"] = "100";
-    opcodes["ampeg_sustain_oncc203"] = "-100";
-    opcodes["ampeg_release"] = "1";
-    opcodes["ampeg_release_oncc204"] = "10";
-    opcodes["lfo01_wave"] = "triangle";
-    opcodes["lfo01_freq"] = "0";
-    opcodes["lfo01_volume"] = "0";
-    opcodes["lfo01_fade"] = "0";
-    opcodes["fil_type"] = "lpf_2p";
-    opcodes["cutoff"] = "20";
-    opcodes["cutoff_oncc310"] = "9600";
-    opcodes["resonance"] = "0";
-    opcodes["resonance_oncc311"] = "40";
-    opcodes["fileg_depth"] = "12000";
-    opcodes["fileg_attack"] = "0";
-    opcodes["fileg_attack_oncc301"] = "10";
-    opcodes["fileg_decay"] = "0";
-    opcodes["fileg_decay_oncc302"] = "10";
-    opcodes["fileg_sustain"] = "100";
-    opcodes["fileg_sustain_oncc303"] = "-100";
-    opcodes["fileg_release"] = "0.1";
-    opcodes["fileg_release_oncc304"] = "10";
-    opcodes["lfo02_freq"] = "0";
-    opcodes["lfo02_cutoff"] = "24000";
-    opcodes["lof02_fade"] = "0";
-    opcodes["pitcheg_depth"] = "2400";
-    opcodes["pitcheg_attack"] = "0";
-    opcodes["pitcheg_attack_oncc401"] = "10";
-    opcodes["pitcheg_decay"] = "0";
-    opcodes["pitcheg_decay_oncc402"] = "10";
-    opcodes["pitcheg_sustain"] = "0";
-    opcodes["pitcheg_sustain_oncc403"] = "100";
-    opcodes["pitcheg_release"] = "0.001";
-    opcodes["pitcheg_release_oncc404"] = "10";
-    opcodes["lfo03_freq"] = "0";
-    opcodes["lfo03_pitch"] = "0";
-    opcodes["lfo03_fade"] = "0";
-    opcodes["trigger"] = "attack";
-    opcodes["loop_mode"] = "no_loop";
-    opcodes["loop_start"] = "0";
-    opcodes["loop_end"] = "4294967296";
-    opcodes["sample"] = "";
-    opcodes["lokey"] = "0";
-    opcodes["hikey"] = "127";
-    opcodes["pitch_keycenter"] = "c4";
-    opcodes["offset"] = "0";
-    opcodes["end"] = "4294967296";
-    opcodes["direction"] = "forward";
-}
-
-void DropsPlugin::makeSFZ()
-{
-    const float fSampleLength = static_cast<float>(sampleLength);
-    uint loopstartInFrames = fSampleLength * fSampleLoopStart;
+    uint loopStartInFrames = sampleLength * fSampleLoopStart;
     uint loopEndInFrames =
         std::min(static_cast<uint>(sampleLength - 1),
-                 static_cast<uint>(fSampleLength * fSampleLoopEnd));
-    uint sampleInInFrames = fSampleLength * fSampleIn;
-    uint sampleOutInFrames = fSampleLength * fSampleOut;
-    opcodes["sample"] = path;
-
-    opcodes["offset"] = std::to_string(sampleInInFrames);
-    opcodes["end"] = std::to_string(sampleOutInFrames);
-    opcodes["direction"] = direction_[static_cast<uint>(fSamplePlayDirection)];
-
-    opcodes["lfo01_wave"] = std::to_string(lfo_types_[static_cast<int>(fAmpLFOType)]);
-    opcodes["lfo01_freq"] = std::to_string(fAmpLFOFreq * lfo_max_freq);
-    opcodes["lfo01_volume"] = std::to_string(fAmpLFODepth * amp_lfo_depth);
-    opcodes["lfo01_fade"] = std::to_string(fAmpLFOFade * lfo_fade);
-    opcodes["lfo01_beats"] = lfo_sync_[static_cast<int>(fAmpLFOSyncFreq)];
-
-    opcodes["lfo02_wave"] = std::to_string(lfo_types_[static_cast<int>(fFilterLFOType)]);
-    opcodes["lfo02_freq"] = std::to_string(fFilterLFOFreq * lfo_max_freq);
-    opcodes["lfo02_cutoff"] = std::to_string(fFilterLFODepth * (fFilterMaxFreq * .5));
-    opcodes["lfo02_fade"] = std::to_string(fFilterLFOFade * lfo_fade);
-    opcodes["lfo02_beats"] = lfo_sync_[static_cast<int>(fFilterLFOSyncFreq)];
-
-    opcodes["lfo03_wave"] = std::to_string(lfo_types_[static_cast<int>(fPitchLFOType)]);
-    opcodes["lfo03_freq"] = std::to_string(fPitchLFOFreq * lfo_max_freq);
-    // opcodes["lfo03_pitch"] = std::to_string(fPitchLFODepth * pitch_lfo_depth);
-    opcodes["lfo03_fade"] = std::to_string(fPitchLFOFade * lfo_fade);
-    opcodes["lfo03_beats"] = lfo_sync_[static_cast<int>(fPitchLFOSyncFreq)];
-
-    opcodes["cutoff"] = std::to_string(fFilterCutOff * fFilterMaxFreq);
-    opcodes["fileg_depth"] = std::to_string(fFilterEGDepth * filter_eg_depth);
-    opcodes["pitcheg_depth"] = std::to_string(fPitchEGDepth * pitch_eg_depth);
-    opcodes["pitch_keycenter"] = std::to_string(static_cast<int>(fSamplePitchKeyCenter));
+                 static_cast<uint>(sampleLength * fSampleLoopEnd));
+    uint sampleInInFrames = sampleLength * fSampleIn;
+    uint sampleOutInFrames = sampleLength * fSampleOut;
 
     std::stringstream buffer;
 
+    buffer << "// Drops SFZ Export\n";
+    buffer << "// Generated from sample: " << path << "\n\n";
+
     buffer << "<region>\n";
-    buffer << "sample=" << opcodes["sample"] << "\n";
+    buffer << "sample=" << path << "\n";
 
     // top bar
-    buffer << "pitch_keycenter=" << opcodes["pitch_keycenter"] << "\n";
+    buffer << "pitch_keycenter=" << static_cast<int>(fSamplePitchKeyCenter) << "\n";
     buffer << "pitch=-100\n"; // tune
     buffer << "pitch_oncc500=200\n";
-    buffer << "direction=" << opcodes["direction"] << "\n";
+    buffer << "direction=" << direction_[static_cast<uint>(fSamplePlayDirection)] << "\n";
     buffer << "loop_mode=" << play_modes_[static_cast<uint>(fSamplePlayMode)] << "\n";
 
     // display
-    buffer << "offset=0\n";
-    buffer << "offset_oncc501=" << std::to_string(sampleLength) << "\n";
-    buffer << "end=" << std::to_string(sampleLength) << "\n";
-    buffer << "end_oncc502=-" << std::to_string(sampleLength) << "\n";
-    buffer << "loop_start=0\n";
-    buffer << "loop_start_oncc503=" << std::to_string(sampleLength) << "\n";
-    buffer << "loop_end=0\n";
-    buffer << "loop_end_oncc504=" << std::to_string(sampleLength) << "\n";
+    buffer << "offset=" << sampleInInFrames << "\n";
+    buffer << "offset_oncc501=" << sampleLength << "\n";
+    buffer << "end=" << sampleOutInFrames << "\n";
+    buffer << "end_oncc502=-" << sampleLength << "\n";
+    buffer << "loop_start=" << loopStartInFrames << "\n";
+    buffer << "loop_start_oncc503=" << sampleLength << "\n";
+    buffer << "loop_end=" << loopEndInFrames << "\n";
+    buffer << "loop_end_oncc504=" << sampleLength << "\n";
 
     // amp TAB
     // amp ADSR cc 201 - 299
-    buffer << "ampeg_attack=0\n";
+    buffer << "ampeg_attack=" << 10 * fAmpEGAttack << "\n";
     buffer << "ampeg_attack_oncc201=10\n";
-    buffer << "ampeg_decay=0\n";
+    buffer << "ampeg_decay=" << 10 * fAmpEgDecay << "\n";
     buffer << "ampeg_decay_oncc202=10\n";
-    buffer << "ampeg_sustain=0\n";
+    buffer << "ampeg_sustain=" << 100 * fAmpEgSustain << "\n";
     buffer << "ampeg_sustain_oncc203=100\n";
-    buffer << "ampeg_release=0.001\n";
+    buffer << "ampeg_release=" << 10 * fAmpEgRelease << "\n";
     buffer << "ampeg_release_oncc204=10\n";
     // amp LFO
-    buffer << "lfo01_wave=" << opcodes["lfo01_wave"] << "\n";
+    buffer << "lfo01_wave=" << lfo_types_[static_cast<int>(fAmpLFOType)] << "\n";
     if (static_cast<bool>(fAmpLFOSync))
     {
-        buffer << "lfo01_beats=" << opcodes["lfo01_beats"] << "\n";
+        buffer << "lfo01_beats=" << lfo_sync_[static_cast<int>(fAmpLFOSyncFreq)] << "\n";
         buffer << "lfo01_count=1\n";
     }
     else
     {
-        buffer << "lfo01_freq=0\n";
+        buffer << "lfo01_freq=" << 20 * fAmpLFOFreq << "\n";
         buffer << "lfo01_freq_oncc205=20\n";
     }
-    buffer << "lfo01_volume=0\n";
+    buffer << "lfo01_volume=" << 12 * fAmpLFODepth << "\n";
     buffer << "lfo01_volume_oncc206=12\n";
-    buffer << "lfo01_fade=0\n";
+    buffer << "lfo01_fade=" << 10 * fAmpLFOFade << "\n";
     buffer << "lfo01_fade_oncc207=10\n";
 
     // tab filter
     buffer << "fil_type=" << filters_[static_cast<uint>(fFilterType)] << "\n";
-    buffer << "cutoff=20\n"; // << opcodes["cutoff"] << "\n";
+    buffer << "cutoff=" << 12000 * fFilterCutOff << "\n";
     buffer << "cutoff_oncc310=12000\n";
-    buffer << "resonance=0\n";
+    buffer << "resonance=" << 20 * fFilterResonance << "\n";
     buffer << "resonance_oncc311=20\n";
     // filter adsr
-    buffer << "fileg_depth=0\n";
+    buffer << "fileg_depth=" << static_cast<int>(12000 * fFilterEGDepth) << "\n";
     buffer << "fileg_depth_oncc312=12000\n";
-    buffer << "fileg_attack=0\n";
+    buffer << "fileg_attack=" << 10 * fFilterEGAttack << "\n";
     buffer << "fileg_attack_oncc301=10\n";
-    buffer << "fileg_decay=0\n";
+    buffer << "fileg_decay=" << 10 * fFilterEgDecay << "\n";
     buffer << "fileg_decay_oncc302=10 \n";
-    buffer << "fileg_sustain=0 \n";
+    buffer << "fileg_sustain=" << 100 * fFilterEgSustain << "\n";
     buffer << "fileg_sustain_oncc303=100 \n";
-    buffer << "fileg_release=10 \n";
+    buffer << "fileg_release=" << 10 * fFilterEgRelease << "\n";
     buffer << "fileg_release_oncc304=-10\n"; // TODO: this looks weird
     // filter lfo
-    buffer << "lfo02_wave=" << opcodes["lfo02_wave"] << "\n";
+    buffer << "lfo02_wave=" << lfo_types_[static_cast<int>(fFilterLFOType)] << "\n";
     if (static_cast<bool>(fFilterLFOSync))
     {
-        buffer << "lfo02_beats=" << opcodes["lfo02_beats"] << "\n";
+        buffer << "lfo02_beats=" << lfo_sync_[static_cast<int>(fFilterLFOSyncFreq)] << "\n";
         buffer << "lfo02_count=1\n";
     }
     else
     {
-        buffer << "lfo02_freq=0\n";
+        buffer << "lfo02_freq=" << 20 * fFilterLFOFreq << "\n";
         buffer << "lfo02_freq_oncc305=20\n";
     }
-    buffer << "lfo02_cutoff=0\n";
+    buffer << "lfo02_cutoff=" << 24000 * fFilterLFODepth << "\n";
     buffer << "lfo02_cutoff_oncc306=24000\n";
-    buffer << "lfo02_fade=0\n";
+    buffer << "lfo02_fade=" << 10 * fFilterLFOFade << "\n";
     buffer << "lfo02_fade_oncc307=10\n";
 
     // tab pitch
     // pitch adsr
-    buffer << "pitcheg_depth=0\n";
+    buffer << "pitcheg_depth=" << static_cast<int>(1200 * fPitchEGDepth) << "\n";
     buffer << "pitcheg_depth_oncc400=1200\n";
-    buffer << "pitcheg_attack=0 \n";
+    buffer << "pitcheg_attack=" << 10 * fPitchEGAttack << "\n";
     buffer << "pitcheg_attack_oncc401=10\n";
-    buffer << "pitcheg_decay=0\n";
+    buffer << "pitcheg_decay=" << 10 * fPitchEgDecay << "\n";
     buffer << "pitcheg_decay_oncc402=10\n";
-    buffer << "pitcheg_sustain=0\n";
+    buffer << "pitcheg_sustain=" << 100 * fPitchEgSustain << "\n";
     buffer << "pitcheg_sustain_oncc403=100\n";
-    buffer << "pitcheg_release=0.001\n";
+    buffer << "pitcheg_release=" << 10 * fPitchEgRelease << "\n";
     buffer << "pitcheg_release_oncc404=10\n";
     // pitch lfo
-    buffer << "lfo03_wave=" << opcodes["lfo03_wave"] << "\n";
+    buffer << "lfo03_wave=" << lfo_types_[static_cast<int>(fPitchLFOType)] << "\n";
     if (static_cast<bool>(fPitchLFOSync))
     {
-        buffer << "lfo03_beats=" << opcodes["lfo03_beats"] << "\n";
+        buffer << "lfo03_beats=" << lfo_sync_[static_cast<int>(fPitchLFOSyncFreq)] << "\n";
         buffer << "lfo03_count=1\n";
     }
     else
     {
-        buffer << "lfo03_freq=0\n";
+        buffer << "lfo03_freq=" << 20 * fPitchLFOFreq << "\n";
         buffer << "lfo03_freq_oncc405=20\n";
     }
-    buffer << "lfo03_pitch=0\n";
+    buffer << "lfo03_pitch=" << 1200 * fPitchLFODepth << "\n";
     buffer << "lfo03_pitch_oncc406=1200\n";
-    buffer << "lfo03_fade=0\n";
+    buffer << "lfo03_fade=" << 10 * fPitchLFOFade << "\n";
     buffer << "lfo03_fade_oncc407=10";
-    // buffer << "trigger=attack\n";
 
-    // replace decimal comma wih decimal point
+    // replace decimal comma with decimal point
     std::string tmpSFZ = buffer.str();
     std::replace(tmpSFZ.begin(), tmpSFZ.end(), ',', '.'); // TODO don't replace in file path
+
+    return tmpSFZ;
+}
+
+void DropsPlugin::makeSFZ()
+{
+    std::string tmpSFZ = createSFZ();
 
 #ifdef DEBUG
     std::cout << "----------------- SFZ FILE ------------------\n";

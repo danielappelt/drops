@@ -609,130 +609,17 @@ void DropsUI::exportSFZFile()
         return;
     }
 
-    // Get the sample filename without path
-    std::string sampleFilename = fileName;
-    size_t lastSlash = sampleFilename.find_last_of("/\\");
-    if (lastSlash != std::string::npos)
-    {
-        sampleFilename = sampleFilename.substr(lastSlash + 1);
-    }
-
-    // Generate SFZ content
-    std::stringstream sfzContent;
-
-    // Add SFZ header
-    sfzContent << "// Drops SFZ Export\n";
-    sfzContent << "// Generated from sample: " << sampleFilename << "\n\n";
-
-    // Add global settings
-    sfzContent << "<region>\n";
-
-    // Add sample path (relative to SFZ file)
-    sfzContent << "sample=" << sampleFilename << "\n";
-
-    // Add pitch keycenter
-    sfzContent << "pitch_keycenter=" << getParameterValueAsInt(kSamplePitchKeyCenter, 1) << "\n";
-    sfzContent << "pitch=" << getParameterValueAsInt(kSamplePitch, 1) - 100 << "\n";
-
-    // Add play direction
-    std::string direction = fSamplePlayDirection->item;
-    if (direction == "REVERSE")
-    {
-        sfzContent << "direction=reverse\n";
-    }
-
-    // Add loop mode
-    std::string loopMode = fSamplePlayMode->item;
-    if (loopMode == "NO LOOP")
-    {
-        sfzContent << "loop_mode=no_loop\n";
-    }
-    else if (loopMode == "ONE SHOT")
-    {
-        sfzContent << "loop_mode=one_shot\n";
-    }
-    else if (loopMode == "CONTINUOUS")
-    {
-        sfzContent << "loop_mode=loop_continuous\n";
-        // Add loop start and end
-        sfzContent << "loop_start=" << sampleLoopStart << "\n";
-        sfzContent << "loop_end=" << sampleLoopEnd << "\n";
-    }
-    else if (loopMode == "SUSTAIN")
-    {
-        sfzContent << "loop_mode=loop_sustain\n";
-        // Add loop start and end
-        sfzContent << "loop_start=" << sampleLoopStart << "\n";
-        sfzContent << "loop_end=" << sampleLoopEnd << "\n";
-    }
-
-    // Add sample start and end points
-    sfzContent << "offset=" << sampleIn << "\n";
-    sfzContent << "end=" << sampleOut << "\n";
-
-    // Pitch EG parameters
-    // EG paramaters in the plugin are in the range 0-1 (float), in SFZ it has 0-100 (float) seconds or percent
-    // The parameters are actually applied via CC (hdcc) which all seem to use SFZ curve 0 and be scaled by ..._oncc...
-    sfzContent << "pitcheg_attack=" << 10 * plugin->getParameterValue(kPitchEgAttack) << "\n";
-    sfzContent << "pitcheg_decay=" << 10 * plugin->getParameterValue(kPitchEgDecay) << "\n";
-    sfzContent << "pitcheg_sustain=" << 100 * plugin->getParameterValue(kPitchEgSustain) << "\n";
-    sfzContent << "pitcheg_release=" << 10 * plugin->getParameterValue(kPitchEgRelease) << "\n";
-    sfzContent << "pitcheg_depth=" << getParameterValueAsInt(kPitchEgDepth, 1200) << "\n";
-
-    // Pitch LFO parameters
-    // TODO: move this function to DropsPlugin in order to be able to access members like lfo_types_[]
-    //sfzContent << "lfo03_wave=" << getParameterValueAsInt(kPitchLFOType, 1) << "\n";
-    sfzContent << "lfo03_freq=" << 20 * plugin->getParameterValue(kPitchLFOFreq) << "\n";
-    //sfzContent << "lfo03_beats=" << getParameterValueAsInt(kPitchLFOSyncFreq, 1) << "\n";
-    //sfzContent << "lfo03_count=1\n";
-    sfzContent << "lfo03_fade=" << 10 * plugin->getParameterValue(kPitchLFOFade) << "\n";
-    sfzContent << "lfo03_pitch=" << 1200 * plugin->getParameterValue(kPitchLFODepth) << "\n";
-
-    // Filter parameters
-    sfzContent << "cutoff=" << 12000 * plugin->getParameterValue(kFilterCutOff) << "\n";
-    sfzContent << "resonance=" << 20 * plugin->getParameterValue(kFilterResonance) << "\n";
-
-    // Filter EG parameters
-    sfzContent << "fileg_attack=" << 10 * plugin->getParameterValue(kFilterEgAttack) << "\n";
-    sfzContent << "fileg_decay=" << 10 * plugin->getParameterValue(kFilterEgDecay) << "\n";
-    sfzContent << "fileg_sustain=" << 100 * plugin->getParameterValue(kFilterEgSustain) << "\n";
-    sfzContent << "fileg_release=" << 10 * plugin->getParameterValue(kFilterEgRelease) << "\n";
-    sfzContent << "fileg_depth=" << getParameterValueAsInt(kFilterEgDepth, 12000) << "\n";
-
-    // TODO: Filter LFO parameters
-    //sfzContent << "lfo02_wave=" << getParameterValueAsInt(kFilterLFOType, 1) << "\n";
-    sfzContent << "lfo02_freq=" << 20 * plugin->getParameterValue(kFilterLFOFreq) << "\n";
-    //sfzContent << "lfo02_beats=" << getParameterValueAsInt(kFilterLFOSyncFreq, 1) << "\n";
-    //sfzContent << "lfo02_count=1\n";
-    sfzContent << "lfo02_fade=" << 10 * plugin->getParameterValue(kFilterLFOFade) << "\n";
-    sfzContent << "lfo02_cutoff=" << 24000 * plugin->getParameterValue(kFilterLFODepth) << "\n";
-
-    // Amp EG parameters
-    sfzContent << "ampeg_attack=" << 10 * plugin->getParameterValue(kAmpEgAttack) << "\n";
-    sfzContent << "ampeg_decay=" << 10 * plugin->getParameterValue(kAmpEgDecay) << "\n";
-    sfzContent << "ampeg_sustain=" << 100 * plugin->getParameterValue(kAmpEgSustain) << "\n";
-    sfzContent << "ampeg_release=" << 10 * plugin->getParameterValue(kAmpEgRelease) << "\n";
-
-    // Amp LFO parameters
-    //sfzContent << "lfo01_wave=" << getParameterValueAsInt(kAmpLFOType, 1) << "\n";
-    sfzContent << "lfo01_freq=" << 20 * plugin->getParameterValue(kAmpLFOFreq) << "\n";
-    //sfzContent << "lfo01_beats=" << getParameterValueAsInt(kAmpLFOSyncFreq) << "\n";
-    //sfzContent << "lfo01_count=1\n";
-    sfzContent << "lfo01_fade=" << 10 * plugin->getParameterValue(kAmpLFOFade) << "\n";
-    sfzContent << "lfo01_volume=" << 12 * plugin->getParameterValue(kAmpLFODepth) << "\n";
-
-    // Close section
-    sfzContent << "\n";
-
     // Save the SFZ file next to the sample
     std::stringstream sfzFilename;
     sfzFilename << fileName << ".sfz";
+
+    std::string sfzContent = plugin->createSFZ();
 
     // Save the SFZ content to the selected file
     std::ofstream outFile(sfzFilename.str());
     if (outFile.is_open())
     {
-	outFile << sfzContent.str();
+	outFile << sfzContent;
 	outFile.close();
 	fPopUp->setText("SFZ exported successfully!");
 	fPopUp->resize();
