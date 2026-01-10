@@ -1114,7 +1114,7 @@ std::string DropsPlugin::createSFZ(bool isExport)
 
     // top bar
     buffer << "pitch_keycenter=" << static_cast<int>(fSamplePitchKeyCenter) << "\n";
-    buffer << "pitch=-100\n"; // tune
+    buffer << "pitch=" << -100 + (isExport ? fSamplePitch : 0) << "\n"; // tune
     buffer << "pitch_oncc500=200\n";
     buffer << "direction=" << direction_[static_cast<uint>(fSamplePlayDirection)] << "\n";
     buffer << "loop_mode=" << play_modes_[static_cast<uint>(fSamplePlayMode)] << "\n";
