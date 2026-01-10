@@ -613,7 +613,7 @@ void DropsUI::exportSFZFile()
     std::stringstream sfzFilename;
     sfzFilename << fileName << ".sfz";
 
-    std::string sfzContent = plugin->createSFZ();
+    std::string sfzContent = plugin->createSFZ(true);
 
     // Save the SFZ content to the selected file
     std::ofstream outFile(sfzFilename.str());

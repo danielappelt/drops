@@ -38,7 +38,7 @@ class DropsPlugin : public Plugin
 {
 public:
     DropsPlugin();
-    std::string createSFZ();
+    std::string createSFZ(bool isExport);
 
 protected:
     // -------------------------------------------------------------------

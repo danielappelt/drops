@@ -1095,7 +1095,7 @@ int DropsPlugin::loadSample(const char *fp)
     return 0;
 }
 
-std::string DropsPlugin::createSFZ()
+std::string DropsPlugin::createSFZ(bool isExport)
 {
     uint loopStartInFrames = sampleLength * fSampleLoopStart;
     uint loopEndInFrames =
@@ -1131,13 +1131,13 @@ std::string DropsPlugin::createSFZ()
 
     // amp TAB
     // amp ADSR cc 201 - 299
-    buffer << "ampeg_attack=" << 10 * fAmpEGAttack << "\n";
+    buffer << "ampeg_attack=" << (isExport ? 10 * fAmpEGAttack : 0) << "\n";
     buffer << "ampeg_attack_oncc201=10\n";
-    buffer << "ampeg_decay=" << 10 * fAmpEgDecay << "\n";
+    buffer << "ampeg_decay=" << (isExport ? 10 * fAmpEgDecay : 0) << "\n";
     buffer << "ampeg_decay_oncc202=10\n";
-    buffer << "ampeg_sustain=" << 100 * fAmpEgSustain << "\n";
+    buffer << "ampeg_sustain=" << (isExport ? 100 * fAmpEgSustain : 0) << "\n";
     buffer << "ampeg_sustain_oncc203=100\n";
-    buffer << "ampeg_release=" << 10 * fAmpEgRelease << "\n";
+    buffer << "ampeg_release=" << 0.001 + (isExport ? 10 * fAmpEgRelease : 0) << "\n";
     buffer << "ampeg_release_oncc204=10\n";
     // amp LFO
     buffer << "lfo01_wave=" << lfo_types_[static_cast<int>(fAmpLFOType)] << "\n";
@@ -1148,30 +1148,33 @@ std::string DropsPlugin::createSFZ()
     }
     else
     {
-        buffer << "lfo01_freq=" << 20 * fAmpLFOFreq << "\n";
+        buffer << "lfo01_freq=" << (isExport ? 20 * fAmpLFOFreq : 0) << "\n";
         buffer << "lfo01_freq_oncc205=20\n";
     }
-    buffer << "lfo01_volume=" << 12 * fAmpLFODepth << "\n";
+    buffer << "lfo01_volume=" << (isExport ? 12 * fAmpLFODepth : 0) << "\n";
     buffer << "lfo01_volume_oncc206=12\n";
-    buffer << "lfo01_fade=" << 10 * fAmpLFOFade << "\n";
+    buffer << "lfo01_fade=" << (isExport ? 10 * fAmpLFOFade : 0) << "\n";
     buffer << "lfo01_fade_oncc207=10\n";
 
     // tab filter
     buffer << "fil_type=" << filters_[static_cast<uint>(fFilterType)] << "\n";
-    buffer << "cutoff=" << 12000 * fFilterCutOff << "\n";
+    buffer << "cutoff=" << 20 * (isExport ? pow(1024, fFilterCutOff) : 1) << "\n";
+    // 12000 cents cutoff range = 12000/100/12 = 10 octaves
+    // cc=x <=> x*10 = amount of octaves to add <=> current value = pow(2, x * 10) * original value
+    // = pow(1024, x) * original value
     buffer << "cutoff_oncc310=12000\n";
-    buffer << "resonance=" << 20 * fFilterResonance << "\n";
+    buffer << "resonance=" << (isExport ? 20 * fFilterResonance : 0) << "\n";
     buffer << "resonance_oncc311=20\n";
     // filter adsr
     buffer << "fileg_depth=" << static_cast<int>(12000 * fFilterEGDepth) << "\n";
     buffer << "fileg_depth_oncc312=12000\n";
-    buffer << "fileg_attack=" << 10 * fFilterEGAttack << "\n";
+    buffer << "fileg_attack=" << (isExport ? 10 * fFilterEGAttack : 0) << "\n";
     buffer << "fileg_attack_oncc301=10\n";
-    buffer << "fileg_decay=" << 10 * fFilterEgDecay << "\n";
+    buffer << "fileg_decay=" << (isExport ? 10 * fFilterEgDecay : 0) << "\n";
     buffer << "fileg_decay_oncc302=10 \n";
-    buffer << "fileg_sustain=" << 100 * fFilterEgSustain << "\n";
+    buffer << "fileg_sustain=" << (isExport ? 100 * fFilterEgSustain : 0) << "\n";
     buffer << "fileg_sustain_oncc303=100 \n";
-    buffer << "fileg_release=" << 10 * fFilterEgRelease << "\n";
+    buffer << "fileg_release=" << 10 + (isExport ? 10 * fFilterEgRelease : 0) << "\n";
     buffer << "fileg_release_oncc304=-10\n"; // TODO: this looks weird
     // filter lfo
     buffer << "lfo02_wave=" << lfo_types_[static_cast<int>(fFilterLFOType)] << "\n";
@@ -1182,25 +1185,25 @@ std::string DropsPlugin::createSFZ()
     }
     else
     {
-        buffer << "lfo02_freq=" << 20 * fFilterLFOFreq << "\n";
+        buffer << "lfo02_freq=" << (isExport ? 20 * fFilterLFOFreq : 0) << "\n";
         buffer << "lfo02_freq_oncc305=20\n";
     }
-    buffer << "lfo02_cutoff=" << 24000 * fFilterLFODepth << "\n";
+    buffer << "lfo02_cutoff=" << (isExport ? 24000 * fFilterLFODepth : 0) << "\n";
     buffer << "lfo02_cutoff_oncc306=24000\n";
-    buffer << "lfo02_fade=" << 10 * fFilterLFOFade << "\n";
+    buffer << "lfo02_fade=" << (isExport ? 10 * fFilterLFOFade : 0) << "\n";
     buffer << "lfo02_fade_oncc307=10\n";
 
     // tab pitch
     // pitch adsr
     buffer << "pitcheg_depth=" << static_cast<int>(1200 * fPitchEGDepth) << "\n";
     buffer << "pitcheg_depth_oncc400=1200\n";
-    buffer << "pitcheg_attack=" << 10 * fPitchEGAttack << "\n";
+    buffer << "pitcheg_attack=" << (isExport ? 10 * fPitchEGAttack : 0) << "\n";
     buffer << "pitcheg_attack_oncc401=10\n";
-    buffer << "pitcheg_decay=" << 10 * fPitchEgDecay << "\n";
+    buffer << "pitcheg_decay=" << (isExport ? 10 * fPitchEgDecay : 0) << "\n";
     buffer << "pitcheg_decay_oncc402=10\n";
-    buffer << "pitcheg_sustain=" << 100 * fPitchEgSustain << "\n";
+    buffer << "pitcheg_sustain=" << (isExport ? 100 * fPitchEgSustain : 0) << "\n";
     buffer << "pitcheg_sustain_oncc403=100\n";
-    buffer << "pitcheg_release=" << 10 * fPitchEgRelease << "\n";
+    buffer << "pitcheg_release=" << 0.001 + (isExport ? 10 * fPitchEgRelease : 0) << "\n";
     buffer << "pitcheg_release_oncc404=10\n";
     // pitch lfo
     buffer << "lfo03_wave=" << lfo_types_[static_cast<int>(fPitchLFOType)] << "\n";
@@ -1211,12 +1214,12 @@ std::string DropsPlugin::createSFZ()
     }
     else
     {
-        buffer << "lfo03_freq=" << 20 * fPitchLFOFreq << "\n";
+        buffer << "lfo03_freq=" << (isExport ? 20 * fPitchLFOFreq : 0) << "\n";
         buffer << "lfo03_freq_oncc405=20\n";
     }
-    buffer << "lfo03_pitch=" << 1200 * fPitchLFODepth << "\n";
+    buffer << "lfo03_pitch=" << (isExport ? 1200 * fPitchLFODepth : 0) << "\n";
     buffer << "lfo03_pitch_oncc406=1200\n";
-    buffer << "lfo03_fade=" << 10 * fPitchLFOFade << "\n";
+    buffer << "lfo03_fade=" << (isExport ? 10 * fPitchLFOFade : 0) << "\n";
     buffer << "lfo03_fade_oncc407=10";
 
     // replace decimal comma with decimal point
@@ -1228,7 +1231,7 @@ std::string DropsPlugin::createSFZ()
 
 void DropsPlugin::makeSFZ()
 {
-    std::string tmpSFZ = createSFZ();
+    std::string tmpSFZ = createSFZ(false);
 
 #ifdef DEBUG
     std::cout << "----------------- SFZ FILE ------------------\n";
