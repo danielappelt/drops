@@ -4,6 +4,9 @@
 # Created by falkTX
 #
 
+# sfizz 1.2.3 needs c++17
+CXXFLAGS += -std=gnu++17
+
 include dpf/Makefile.base.mk
 
 
