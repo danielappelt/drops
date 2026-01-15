@@ -593,12 +593,6 @@ std::string DropsUI::dirnameOf(const std::string &fname)
                : fname.substr(0, pos);
 }
 
-int DropsUI::getParameterValueAsInt(uint32_t index, float scale)
-{
-    float value = plugin->getParameterValue(index) * scale;
-    return static_cast<int>(value);
-}
-
 void DropsUI::exportSFZFile()
 {
     if (!plugin->loadedSample || fileName.empty())
@@ -619,16 +613,16 @@ void DropsUI::exportSFZFile()
     std::ofstream outFile(sfzFilename.str());
     if (outFile.is_open())
     {
-	outFile << sfzContent;
-	outFile.close();
-	fPopUp->setText("SFZ exported successfully!");
-	fPopUp->resize();
-	fPopUp->show();
+        outFile << sfzContent;
+        outFile.close();
+        fPopUp->setText("SFZ exported successfully!");
+        fPopUp->resize();
+        fPopUp->show();
     }
     else
     {
-	fPopUp->setText("Failed to save SFZ file!");
-	fPopUp->show();
+        fPopUp->setText("Failed to save SFZ file!");
+        fPopUp->show();
     }
 }
 

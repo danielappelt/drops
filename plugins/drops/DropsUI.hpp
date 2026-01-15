@@ -192,7 +192,6 @@ private:
     float pitchLFOFreq, pitchLFOSyncFreq;
 
     // SFZ Export
-    int getParameterValueAsInt(uint32_t index, float scale);
     void exportSFZFile();
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DropsUI)
