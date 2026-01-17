@@ -911,13 +911,14 @@ void DropsUI::onNanoDisplay()
     y = fileopen_button->getHeight() / 2 - clearlyBrokenLogo->getHeight() / 2;
     clearlyBrokenLogo->drawAt(x, y);
 
-    // VBOX_AMP xywh {12 329 323 176}
+    // VBOX_PITCH xywh {12 329 323 176}
     beginPath();
     fillColor(eerie_black);
     rect(12, 329, 323, 211);
     fill();
     closePath();
 
+    // outer box
     beginPath();
     strokeWidth(2.0f);
     strokeColor(saffron);
@@ -925,36 +926,44 @@ void DropsUI::onNanoDisplay()
     stroke();
     closePath();
 
+    // line 1
     beginPath();
-    fillColor(saffron);
-    roundedRect(12 + 2, 329 + 2, 40, 18, 2);
-    fill();
-    closePath();
-
-    beginPath();
-    fontSize(16);
-    textAlign(ALIGN_MIDDLE | ALIGN_CENTER);
-    float cx = 12 + 2 + 40 / 2;
-    float cy = 329 + 2 + 18 / 2;
-    fillColor(eerie_black);
-    text(cx, cy, "AMP", nullptr);
-    closePath();
-
-    beginPath();
-    moveTo(12 + 2, 329 + 211 / 2);
-    lineTo(332, 329 + 211 / 2);
+    moveTo(12 + 2,
+           329 + 2 + (211 / 2));
+    lineTo(12 + 2 + 323 - 4,
+           329 + 2 + (211 / 2));
     stroke();
     closePath();
 
+    // back label PITCH
     beginPath();
     fillColor(saffron);
-    roundedRect(12 + 2, 329 + 211 / 2, 40, 18, 2);
+    roundedRect(12 + 2,
+                329 + 2, 56, 18, 2);
     fill();
     closePath();
+    // text label PITCH
     beginPath();
     fontSize(16);
+    textAlign(ALIGN_CENTER | ALIGN_MIDDLE);
     fillColor(eerie_black);
-    cy = 329 + 2 + 211 / 2 + 18 / 2;
+    text(12 + 2 + 56 / 2, 329 + 2 + 18 / 2, "PITCH", nullptr);
+    closePath();
+
+    // back LFO
+    beginPath();
+    fillColor(saffron);
+    roundedRect(12 + 2,
+                329 + 211 / 2, 40, 18, 2);
+    fill();
+    closePath();
+    // lable LFO
+    beginPath();
+    fontSize(16);
+    textAlign(ALIGN_CENTER | ALIGN_MIDDLE);
+    fillColor(eerie_black);
+    float cy = 329 + 2 + 211 / 2 + 18 / 2;
+    float cx = 12 + 2 + 40 / 2;
     text(cx, cy, "LFO", nullptr);
     closePath();
 
@@ -1023,14 +1032,13 @@ void DropsUI::onNanoDisplay()
     text(cx, cy, "LFO", nullptr);
     closePath();
 
-    // VBOX_PITCH xywh {667 329 323 176}
+    // VBOX_AMP xywh {667 329 323 176}
     beginPath();
     fillColor(eerie_black);
     rect(667, 329, 323, 211);
     fill();
     closePath();
 
-    // outer box
     beginPath();
     strokeWidth(2.0f);
     strokeColor(shamrock_green);
@@ -1038,44 +1046,36 @@ void DropsUI::onNanoDisplay()
     stroke();
     closePath();
 
-    // line 1
     beginPath();
-    moveTo(667 + 2,
-           329 + 2 + (211 / 2));
-    lineTo(667 + 2 + 323 - 4,
-           329 + 2 + (211 / 2));
+    fillColor(shamrock_green);
+    roundedRect(667 + 2, 329 + 2, 40, 18, 2);
+    fill();
+    closePath();
+
+    beginPath();
+    fontSize(16);
+    textAlign(ALIGN_MIDDLE | ALIGN_CENTER);
+    cx = 667 + 2 + 40 / 2;
+    cy = 329 + 2 + 18 / 2;
+    fillColor(eerie_black);
+    text(cx, cy, "AMP", nullptr);
+    closePath();
+
+    beginPath();
+    moveTo(667 + 2, 329 + 211 / 2);
+    lineTo(667 + 323, 329 + 211 / 2);
     stroke();
     closePath();
 
-    // back label PITCH
     beginPath();
     fillColor(shamrock_green);
-    roundedRect(667 + 2,
-                329 + 2, 56, 18, 2);
+    roundedRect(667 + 2, 329 + 211 / 2, 40, 18, 2);
     fill();
     closePath();
-    // text label PITCH
     beginPath();
     fontSize(16);
-    fillColor(eerie_black);
-
-    text(667 + 2 + 56 / 2, 329 + 2 + 18 / 2, "PITCH", nullptr);
-    closePath();
-
-    // back LFO
-    beginPath();
-    fillColor(shamrock_green);
-    roundedRect(667 + 2,
-                329 + 211 / 2, 40, 18, 2);
-    fill();
-    closePath();
-    // lable LFO
-    beginPath();
-    fontSize(16);
-    textAlign(ALIGN_CENTER | ALIGN_MIDDLE);
     fillColor(eerie_black);
     cy = 329 + 2 + 211 / 2 + 18 / 2;
-    cx = 667 + 2 + 40 / 2;
     text(cx, cy, "LFO", nullptr);
     closePath();
 }
