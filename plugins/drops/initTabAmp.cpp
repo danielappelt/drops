@@ -30,7 +30,7 @@ void DropsUI::initTabAmp()
 
     vbox_amp = new VBox(window);
     vbox_amp->setId(kVBoxAmp);
-    vbox_amp->setAbsolutePos(12, 329);
+    vbox_amp->setAbsolutePos(667, 329);
     vbox_amp->setWidth(323);
     vbox_amp->setHeight(211);
 
@@ -52,9 +52,9 @@ void DropsUI::initTabAmp()
     fAmpEgAttack->gauge_width = gauge;
     fAmpEgAttack->margin = margin;
     fAmpEgAttack->label = "ATTACK";
-    fAmpEgAttack->foreground_color = saffron;
+    fAmpEgAttack->foreground_color = shamrock_green;
     fAmpEgAttack->background_color = black_olive;
-    fAmpEgAttack->highlight_color = saffron_1;
+    fAmpEgAttack->highlight_color = shamrock_green_1;
     fAmpEgAttack->text_color = floral_white;
     fAmpEgAttack->real_min = 0.0f;
     fAmpEgAttack->real_max = 10.0f;
@@ -72,9 +72,9 @@ void DropsUI::initTabAmp()
     fAmpEgDecay->gauge_width = gauge;
     fAmpEgDecay->margin = margin;
     fAmpEgDecay->label = "DECAY";
-    fAmpEgDecay->foreground_color = saffron;
+    fAmpEgDecay->foreground_color = shamrock_green;
     fAmpEgDecay->background_color = black_olive;
-    fAmpEgDecay->highlight_color = saffron_1;
+    fAmpEgDecay->highlight_color = shamrock_green_1;
     fAmpEgDecay->text_color = floral_white;
     fAmpEgDecay->real_min = 0.0f;
     fAmpEgDecay->real_max = 10.f;
@@ -92,9 +92,9 @@ void DropsUI::initTabAmp()
     fAmpEgSustain->gauge_width = gauge;
     fAmpEgSustain->margin = margin;
     fAmpEgSustain->label = "SUSTAIN";
-    fAmpEgSustain->foreground_color = saffron;
+    fAmpEgSustain->foreground_color = shamrock_green;
     fAmpEgSustain->background_color = black_olive;
-    fAmpEgSustain->highlight_color = saffron_1;
+    fAmpEgSustain->highlight_color = shamrock_green_1;
     fAmpEgSustain->text_color = floral_white;
     fAmpEgSustain->real_min = 0.0f;
     fAmpEgSustain->real_max = 100.f;
@@ -109,9 +109,9 @@ void DropsUI::initTabAmp()
     fAmpEgRelease->gauge_width = gauge;
     fAmpEgRelease->margin = margin;
     fAmpEgRelease->label = "RELEASE";
-    fAmpEgRelease->foreground_color = saffron;
+    fAmpEgRelease->foreground_color = shamrock_green;
     fAmpEgRelease->background_color = black_olive;
-    fAmpEgRelease->highlight_color = saffron_1;
+    fAmpEgRelease->highlight_color = shamrock_green_1;
     fAmpEgRelease->text_color = floral_white;
     fAmpEgRelease->real_min = 0.0f;
     fAmpEgRelease->real_max = 10.f;
@@ -142,7 +142,7 @@ void DropsUI::initTabAmp()
     fAmpLFOType->setCallback(this);
     fAmpLFOType->label = "TYPE :";
     fAmpLFOType->item = "a";
-    fAmpLFOType->foreground_color = saffron;
+    fAmpLFOType->foreground_color = shamrock_green;
     fAmpLFOType->background_color = black_olive;
     fAmpLFOType->text_color = floral_white;
 
@@ -151,8 +151,8 @@ void DropsUI::initTabAmp()
     fAmpLFOSync->setSize(knobSize.getWidth()*.5,knobSize.getHeight());
     fAmpLFOSync->setCallback(this);
     fAmpLFOSync->background_color = black_olive;
-    fAmpLFOSync->foreground_color = saffron;
-    fAmpLFOSync->highlight_color_active = saffron_1;
+    fAmpLFOSync->foreground_color = shamrock_green;
+    fAmpLFOSync->highlight_color_active = shamrock_green_1;
     fAmpLFOSync->highlight_color_inactive = black_olive_1;
     fAmpLFOSync->text_color = floral_white;
     fAmpLFOSync->setFont("Roboto_Regular",
@@ -172,8 +172,8 @@ void DropsUI::initTabAmp()
     fAmpLFOFreq->margin = margin;
     fAmpLFOFreq->label = "FREQ";
     fAmpLFOFreq->background_color = black_olive;
-    fAmpLFOFreq->foreground_color = saffron;
-    fAmpLFOFreq->highlight_color = saffron_1;
+    fAmpLFOFreq->foreground_color = shamrock_green;
+    fAmpLFOFreq->highlight_color = shamrock_green_1;
     fAmpLFOFreq->text_color = floral_white;
     fAmpLFOFreq->default_value = 0;
     fAmpLFOFreq->real_min = 0.0f;
@@ -213,8 +213,8 @@ void DropsUI::initTabAmp()
     fAmpLFODepth->margin = margin;
     fAmpLFODepth->label = "DEPTH";
     fAmpLFODepth->background_color = black_olive;
-    fAmpLFODepth->foreground_color = saffron;
-    fAmpLFODepth->highlight_color = saffron_1;
+    fAmpLFODepth->foreground_color = shamrock_green;
+    fAmpLFODepth->highlight_color = shamrock_green_1;
     fAmpLFODepth->text_color = floral_white;
     fAmpLFODepth->default_value = 0.0f;
     fAmpLFODepth->real_min = 0.0f;
@@ -231,8 +231,8 @@ void DropsUI::initTabAmp()
     fAmpLFOFade->margin = margin;
     fAmpLFOFade->label = "FADE";
     fAmpLFOFade->background_color = black_olive;
-    fAmpLFOFade->foreground_color = saffron;
-    fAmpLFOFade->highlight_color = saffron_1;
+    fAmpLFOFade->foreground_color = shamrock_green;
+    fAmpLFOFade->highlight_color = shamrock_green_1;
     fAmpLFOFade->text_color = floral_white;
     fAmpLFOFade->default_value = 0.0f;
     fAmpLFOFade->real_min = 0.0f;
@@ -260,7 +260,7 @@ void DropsUI::initTabAmp()
     fAmpLFOTypeMenu->hide();
     fAmpLFOTypeMenu->background_color = black_olive;
     fAmpLFOTypeMenu->foreground_color = black_olive_2;
-    fAmpLFOTypeMenu->highlight_color = saffron_1;
+    fAmpLFOTypeMenu->highlight_color = shamrock_green_1;
     fAmpLFOTypeMenu->text_color = floral_white;
 
     fAmpLFOType->setMenu(fAmpLFOTypeMenu);

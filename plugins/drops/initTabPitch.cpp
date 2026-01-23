@@ -32,7 +32,7 @@ void DropsUI::initTabPitch()
 
     vbox_pitch = new VBox(window);
     vbox_pitch->setId(kVBoxPitch);
-    vbox_pitch->setAbsolutePos(667, 329);
+    vbox_pitch->setAbsolutePos(12, 329);
     vbox_pitch->setSize(323, 211);
 
     hbox_pitch_row_1 = new HBox(vbox_pitch);
@@ -53,9 +53,9 @@ void DropsUI::initTabPitch()
     fPitchEgDepth->gauge_width = gauge;
     fPitchEgDepth->margin = margin;
     fPitchEgDepth->label = "DEPTH";
-    fPitchEgDepth->foreground_color = shamrock_green;
+    fPitchEgDepth->foreground_color = saffron;
     fPitchEgDepth->background_color = black_olive;
-    fPitchEgDepth->highlight_color = shamrock_green_1;
+    fPitchEgDepth->highlight_color = saffron_1;
     fPitchEgDepth->text_color = floral_white;
     fPitchEgDepth->real_min = 0.0f;
     fPitchEgDepth->real_max = 2400.0f;
@@ -70,9 +70,9 @@ void DropsUI::initTabPitch()
     fPitchEgAttack->gauge_width = gauge;
     fPitchEgAttack->margin = margin;
     fPitchEgAttack->label = "ATTACK";
-    fPitchEgAttack->foreground_color = shamrock_green;
+    fPitchEgAttack->foreground_color = saffron;
     fPitchEgAttack->background_color = black_olive;
-    fPitchEgAttack->highlight_color = shamrock_green_1;
+    fPitchEgAttack->highlight_color = saffron_1;
     fPitchEgAttack->text_color = floral_white;
     fPitchEgAttack->real_min = 0.0f;
     fPitchEgAttack->real_max = 10.0f;
@@ -90,9 +90,9 @@ void DropsUI::initTabPitch()
     fPitchEgDecay->gauge_width = gauge;
     fPitchEgDecay->margin = margin;
     fPitchEgDecay->label = "DECAY";
-    fPitchEgDecay->foreground_color = shamrock_green;
+    fPitchEgDecay->foreground_color = saffron;
     fPitchEgDecay->background_color = black_olive;
-    fPitchEgDecay->highlight_color = shamrock_green_1;
+    fPitchEgDecay->highlight_color = saffron_1;
     fPitchEgDecay->text_color = floral_white;
     fPitchEgDecay->real_min = 0.0f;
     fPitchEgDecay->real_max = 10.f;
@@ -110,9 +110,9 @@ void DropsUI::initTabPitch()
     fPitchEgSustain->gauge_width = gauge;
     fPitchEgSustain->margin = margin;
     fPitchEgSustain->label = "SUSTAIN";
-    fPitchEgSustain->foreground_color = shamrock_green;
+    fPitchEgSustain->foreground_color = saffron;
     fPitchEgSustain->background_color = black_olive;
-    fPitchEgSustain->highlight_color = shamrock_green_1;
+    fPitchEgSustain->highlight_color = saffron_1;
     fPitchEgSustain->text_color = floral_white;
     fPitchEgSustain->real_min = 0.0f;
     fPitchEgSustain->real_max = 100.f;
@@ -127,9 +127,9 @@ void DropsUI::initTabPitch()
     fPitchEgRelease->gauge_width = gauge;
     fPitchEgRelease->margin = margin;
     fPitchEgRelease->label = "RELEASE";
-    fPitchEgRelease->foreground_color = shamrock_green;
+    fPitchEgRelease->foreground_color = saffron;
     fPitchEgRelease->background_color = black_olive;
-    fPitchEgRelease->highlight_color = shamrock_green_1;
+    fPitchEgRelease->highlight_color = saffron_1;
     fPitchEgRelease->text_color = floral_white;
     fPitchEgRelease->real_min = 0.0f;
     fPitchEgRelease->real_max = 10.f;
@@ -161,7 +161,7 @@ void DropsUI::initTabPitch()
     fPitchLFOType->setCallback(this);
     fPitchLFOType->label = "TYPE :";
     fPitchLFOType->item = "a";
-    fPitchLFOType->foreground_color = shamrock_green;
+    fPitchLFOType->foreground_color = saffron;
     fPitchLFOType->background_color = black_olive;
     fPitchLFOType->text_color = floral_white;
 
@@ -170,8 +170,8 @@ void DropsUI::initTabPitch()
     fPitchLFOSync->setSize(knobSize);
     fPitchLFOSync->setCallback(this);
     fPitchLFOSync->background_color = black_olive;
-    fPitchLFOSync->foreground_color = shamrock_green;
-    fPitchLFOSync->highlight_color_active = shamrock_green_1;
+    fPitchLFOSync->foreground_color = saffron;
+    fPitchLFOSync->highlight_color_active = saffron_1;
     fPitchLFOSync->highlight_color_inactive = black_olive_1;
     fPitchLFOSync->text_color = floral_white;
     fPitchLFOSync->setFont("Roboto_Regular", reinterpret_cast<const uchar *>(fonts::Roboto_RegularData), fonts::Roboto_RegularDataSize);
@@ -189,8 +189,8 @@ void DropsUI::initTabPitch()
     fPitchLFOFreq->margin = margin;
     fPitchLFOFreq->label = "FREQ";
     fPitchLFOFreq->background_color = black_olive;
-    fPitchLFOFreq->foreground_color = shamrock_green;
-    fPitchLFOFreq->highlight_color = shamrock_green_1;
+    fPitchLFOFreq->foreground_color = saffron;
+    fPitchLFOFreq->highlight_color = saffron_1;
     fPitchLFOFreq->text_color = floral_white;
     fPitchLFOFreq->default_value = 0;
     fPitchLFOFreq->real_min = 0.0f;
@@ -230,8 +230,8 @@ void DropsUI::initTabPitch()
     fPitchLFODepth->margin = margin;
     fPitchLFODepth->label = "DEPTH";
     fPitchLFODepth->background_color = black_olive;
-    fPitchLFODepth->foreground_color = shamrock_green;
-    fPitchLFODepth->highlight_color = shamrock_green_1;
+    fPitchLFODepth->foreground_color = saffron;
+    fPitchLFODepth->highlight_color = saffron_1;
     fPitchLFODepth->text_color = floral_white;
     fPitchLFODepth->default_value = 0;
     fPitchLFODepth->real_min = 0.0f;
@@ -251,8 +251,8 @@ void DropsUI::initTabPitch()
     fPitchLFOFade->margin = margin;
     fPitchLFOFade->label = "FADE";
     fPitchLFOFade->background_color = black_olive;
-    fPitchLFOFade->foreground_color = shamrock_green;
-    fPitchLFOFade->highlight_color = shamrock_green_1;
+    fPitchLFOFade->foreground_color = saffron;
+    fPitchLFOFade->highlight_color = saffron_1;
     fPitchLFOFade->text_color = floral_white;
     fPitchLFOFade->default_value = 0.0f;
     fPitchLFOFade->real_min = 0.0f;
@@ -280,7 +280,7 @@ void DropsUI::initTabPitch()
     fPitchLFOTypeMenu->hide();
     fPitchLFOTypeMenu->background_color = black_olive;
     fPitchLFOTypeMenu->foreground_color = black_olive_2;
-    fPitchLFOTypeMenu->highlight_color = shamrock_green_1;
+    fPitchLFOTypeMenu->highlight_color = saffron_1;
     fPitchLFOTypeMenu->text_color = floral_white;
 
     fPitchLFOType->setMenu(fPitchLFOTypeMenu);
