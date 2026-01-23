@@ -1,7 +1,7 @@
 # Drops
 
 #### Drops Really Only Plays Samples
-![Drops](https://raw.githubusercontent.com/clearly-broken-software/drops/main/Drops1.0beta.png "Screenshot of Drops")
+![Drops](Drops1.0beta.png "Screenshot of Drops")
 
 Drops is a single audio file sample player plugin in lv2 and vst format for linux.
 
