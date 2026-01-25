@@ -1342,7 +1342,7 @@ void DropsPlugin::run(
     const TimePosition &timePos(getTimePosition());
     if (timePos.bbt.valid)
     {
-        synth.tempo(0, 60.0f / timePos.bbt.beatsPerMinute);
+        synth.bpmTempo(0, timePos.bbt.beatsPerMinute);
         synth.timeSignature(0, timePos.bbt.beatsPerBar, timePos.bbt.beatType);
         const double beat = timePos.bbt.beat - 1;
         const double fracBeat = timePos.bbt.tick / timePos.bbt.ticksPerBeat;
@@ -1437,7 +1437,7 @@ void DropsPlugin::run(
         } // midi events
         ++framesDone;
     } // frames loop
-    synth.renderBlock(outputs, frames, 2);
+    synth.renderBlock(outputs, frames);
 } // run
 
 /* Plugin entry point, called by DPF to create a new plugin instance. */
