@@ -94,6 +94,7 @@ enum Widgets
    kScrollbarHandle = 1000,
    kScrollbarLeft,
    kScrollbarRight,
+   kExportSFZ,
    kNormalizeMenu,
    kKeyCenterMenu,
    kSampleNoPitchCheckbox,

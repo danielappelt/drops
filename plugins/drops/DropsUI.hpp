@@ -29,7 +29,7 @@
 
 #include "DropsGeometry.hpp"
 #include "DropsPlugin.hpp"
-// #include "TextButton.hpp"
+#include "TextButton.hpp"
 #include "FileOpenButton.hpp"
 #include "ScrollBar.hpp"
 #include "Knob.hpp"
@@ -62,7 +62,8 @@ class DropsUI : public UI,
                 public FileOpenButton::Callback,
                 // public RadioButton::Callback,
                 public SVGButton::Callback,
-                public CheckBox::Callback
+                public CheckBox::Callback,
+                public TextButton::Callback
 {
 public:
     DropsUI();
@@ -76,7 +77,7 @@ protected:
     bool onMouse(const MouseEvent &ev) override;
     bool onScroll(const ScrollEvent &) override;
     bool onMotion(const MotionEvent &) override;
-    // void onTextButtonClicked(TextButton *textButton) override;
+    void onTextButtonClicked(TextButton *textButton) override;
     void onFileOpenButtonClicked(FileOpenButton *fileOpenButton) override;
     void onScrollBarClicked(ScrollBar *scrollBar, bool dragging) override;
     void onDropDownClicked(DropDown *dropdown) override;
@@ -99,6 +100,7 @@ private:
 
     DropsPlugin *plugin;
     ScopedPointer<FileOpenButton> fileopen_button;
+    ScopedPointer<TextButton> fExportSFZButton;
     ScopedPointer<ScrollBar> fScrollBarHandle, fLoopStart, fLoopEnd, fSampleIn,
         fSampleOut, fScrollBarLeft, fScrollBarRight;
 
@@ -188,6 +190,9 @@ private:
     float ampLFOFreq, ampLFOSyncFreq;
     float filterLFOFreq, filterLFOSyncFreq;
     float pitchLFOFreq, pitchLFOSyncFreq;
+
+    // SFZ Export
+    void exportSFZFile();
 
     DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DropsUI)
 };

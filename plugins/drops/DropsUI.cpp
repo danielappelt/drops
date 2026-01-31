@@ -18,6 +18,7 @@
 
 #include "DropsUI.hpp"
 #include <iostream>
+#include <fstream>
 
 #define NANOSVG_IMPLEMENTATION
 #include "nanosvg.h"
@@ -100,11 +101,23 @@ void DropsUI::initWidgets()
     Window &window = getParentWindow();
     fileopen_button = new FileOpenButton(window);
     fileopen_button->setCallback(this);
-    fileopen_button->setAbsolutePos(238, 0);
-    fileopen_button->setSize(530, 55);
+    fileopen_button->setAbsolutePos(248, 10);
+    fileopen_button->setSize(530, 40);
     fileopen_button->background_color = eerie_black_3;
     fileopen_button->text_color = floral_white;
-    fileopen_button->font_size = 24.f;
+    fileopen_button->font_size = 18.f;
+
+    // Add Export SFZ button
+    fExportSFZButton = new TextButton(window);
+    fExportSFZButton->setId(kExportSFZ);
+    fExportSFZButton->setText("EXPORT");
+    fExportSFZButton->setCallback(this);
+    fExportSFZButton->setAbsolutePos(display_right - 85, 10);
+    fExportSFZButton->setSize(110, 40);
+    fExportSFZButton->background_color = eerie_black_3;
+    fExportSFZButton->foreground_color = floral_white;
+    fExportSFZButton->highlight_color = flame;
+    fExportSFZButton->font_size = 18.f;
 
     fScrollBarHandle = new ScrollBar(window);
     fScrollBarHandle->setId(kScrollbarHandle);
@@ -320,27 +333,27 @@ void DropsUI::initWidgets()
         "23 B0",
         "22 A#0/Bb0",
         "21 A0",
-        "20  ",
-        "19  ",
-        "18  ",
-        "17  ",
-        "16  ",
-        "15  ",
-        "14  ",
-        "13  ",
-        "12  ",
-        "11  ",
-        "10  ",
-        "9  ",
-        "8  ",
-        "7  ",
-        "6  ",
-        "5  ",
-        "4  ",
-        "3  ",
-        "2  ",
-        "1  ",
-        "0 ",
+        "20 G#1/Ab1",
+        "19 G1",
+        "18 F#0/Gb0",
+        "17 F0",
+        "16 E0",
+        "15 D#0/Eb0",
+        "14 D0",
+        "13 C#0/Db0",
+        "12 C0",
+        "11 B-1",
+        "10 A#-1/Bb-1",
+        "9 A-1"
+        "8 G#-1/Ab-1",
+        "7 G-1",
+        "6 F#-1/Gb-1",
+        "5 F-1",
+        "4 E-1",
+        "3 D#-1/Eb-1",
+        "2 D-1",
+        "1 C#-1/Db-1",
+        "0 C-1",
     });
     fKeyCenterMenu->hide();
     fKeyCenterMenu->background_color = black_olive;
@@ -464,7 +477,7 @@ void DropsUI::initWidgets()
     fPlayModeMenu->setFont("Roboto_Regular",
                            reinterpret_cast<const uchar *>(fonts::Roboto_RegularData),
                            fonts::Roboto_RegularDataSize);
-    fPlayModeMenu->addItems({"NO LOOP", "ONE SHOT", "CONTINUOUS"});
+    fPlayModeMenu->addItems({"NO LOOP", "ONE SHOT", "CONTINUOUS", "SUSTAIN"});
     fPlayModeMenu->hide();
     fPlayModeMenu->background_color = black_olive;
     fPlayModeMenu->foreground_color = black_olive_2;
@@ -569,7 +582,7 @@ void DropsUI::makeIcons()
     dropsLogo = new SVGImage(this, drops_logo, 1.0f);
     loopLeft = new SVGImage(this, loop_left, 1.0f);
     loopRight = new SVGImage(this, loop_right, 1.0f);
-    clearlyBrokenLogo = new SVGImage(this, artwork::clearly_broken_logo, 0.8f);
+    //clearlyBrokenLogo = new SVGImage(this, artwork::clearly_broken_logo, 0.8f);
 }
 
 std::string DropsUI::dirnameOf(const std::string &fname)
@@ -578,6 +591,39 @@ std::string DropsUI::dirnameOf(const std::string &fname)
     return (std::string::npos == pos)
                ? ""
                : fname.substr(0, pos);
+}
+
+void DropsUI::exportSFZFile()
+{
+    if (!plugin->loadedSample || fileName.empty())
+    {
+        fPopUp->setText("No sample loaded!");
+        fPopUp->resize();
+        fPopUp->show();
+        return;
+    }
+
+    // Save the SFZ file next to the sample
+    std::stringstream sfzFilename;
+    sfzFilename << fileName << ".sfz";
+
+    std::string sfzContent = plugin->createSFZ(true);
+
+    // Save the SFZ content to the selected file
+    std::ofstream outFile(sfzFilename.str());
+    if (outFile.is_open())
+    {
+        outFile << sfzContent;
+        outFile.close();
+        fPopUp->setText("SFZ exported successfully!");
+        fPopUp->resize();
+        fPopUp->show();
+    }
+    else
+    {
+        fPopUp->setText("Failed to save SFZ file!");
+        fPopUp->show();
+    }
 }
 
 void DropsUI::parameterChanged(uint32_t index, float value)
@@ -898,18 +944,7 @@ void DropsUI::onNanoDisplay()
         drawInOutMarkers();
     }
 
-    // draw logos
-    uint w = dropsLogo->getWidth();
-    uint h = dropsLogo->getHeight();
-    int x = fileopen_button->getAbsoluteX() / 2 - w / 2;
-    int y = fileopen_button->getHeight() / 2 - h / 2;
-    dropsLogo->drawAt(x, y);
-    const int fo_right = fileopen_button->getAbsoluteX() + fileopen_button->getWidth();
-    const int half_right_space = (width - fo_right) / 2;
-    const int half_cb_logo = clearlyBrokenLogo->getWidth() / 2;
-    x = fo_right + half_right_space - half_cb_logo;
-    y = fileopen_button->getHeight() / 2 - clearlyBrokenLogo->getHeight() / 2;
-    clearlyBrokenLogo->drawAt(x, y);
+    dropsLogo->drawAt(10, 5);
 
     // VBOX_PITCH xywh {12 329 323 176}
     beginPath();
@@ -1545,9 +1580,21 @@ void DropsUI::onFileOpenButtonClicked(FileOpenButton *)
     getParentWindow().openFileBrowser(opts);
 }
 
-// void DropsUI::onTextButtonClicked(TextButton *tb)
-// {
-// }
+void DropsUI::onTextButtonClicked(TextButton *tb)
+{
+    uint id = tb->getId();
+    switch (id)
+    {
+    case kExportSFZ:
+        exportSFZFile();
+        break;
+    default:
+#ifdef DEBUG
+        printf("TextButton %i clicked\n", id);
+#endif
+        break;
+    }
+}
 
 void DropsUI::onDropDownClicked(DropDown *dropDown)
 {
@@ -1715,9 +1762,9 @@ void DropsUI::knobDragFinished(Knob *knob, float value)
     //     printf("%i , drag finished\n", id);
     // #endif
 }
+
 void DropsUI::knobValueChanged(Knob *knob, float value)
 {
-
     uint id = knob->getId();
 
     switch (id)
@@ -1971,7 +2018,6 @@ void DropsUI::onMenuClicked(Menu *menu, uint menu_id, std::string item)
         setParameterValue(kFilterLFOType, menu_id);
         break;
     default:
-
         break;
     }
 }
@@ -2036,6 +2082,7 @@ void DropsUI::onSVGButtonClicked(SVGButton *svgb)
         break;
     }
 }
+
 void DropsUI::onCheckBoxClicked(CheckBox *checkbox, bool is_checked)
 {
     float value = static_cast<float>(is_checked);
